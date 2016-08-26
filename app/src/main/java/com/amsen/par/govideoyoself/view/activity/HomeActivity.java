@@ -1,11 +1,16 @@
 package com.amsen.par.govideoyoself.view.activity;
 
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.amsen.par.govideoyoself.R;
 import com.amsen.par.govideoyoself.view.base.rx.event.Event;
 import com.amsen.par.govideoyoself.view.base.rx.event.EventStream;
+import com.amsen.par.govideoyoself.view.base.rx.subscriber.OnNextSubscriber;
+import com.amsen.par.govideoyoself.view.fragment.DoneFragment;
+import com.amsen.par.govideoyoself.view.fragment.ListFragment;
+import com.amsen.par.govideoyoself.view.model.VideoStatus;
 import com.amsen.par.govideoyoself.view.source.VideoSource;
 import com.amsen.par.govideoyoself.view.source.event.VideoEvent;
 
@@ -34,12 +39,30 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initialState() {
-        videoSource.init();
+        videoSource
+                .getVideos()
+                .map(videoStatuses -> {
+                    int complete = 0;
 
-        Observable<Event> videoEventStream = eventStream.historyStream()
-                .filter(e -> e instanceof VideoEvent);
+                    for(VideoStatus v : videoStatuses) {
+                        complete += v.isCompleted() ? 1 : 0;
+                    }
 
-        videoEventStream
-                .filter(e -> e.type)
+                    return complete == videoStatuses.size();
+                })
+                .subscribe(new OnNextSubscriber<>(completedVideos -> {
+                    if(completedVideos) {
+                        showFragment(new DoneFragment());
+                    } else {
+                        showFragment(new ListFragment());
+                    }
+                }));
+    }
+
+    private void showFragment(Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragments, fragment)
+                .commit();
     }
 }
