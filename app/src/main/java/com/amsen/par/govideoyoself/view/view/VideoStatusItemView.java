@@ -30,7 +30,7 @@ import rx.schedulers.Schedulers;
 
 /**
  * Encapsulation for ListItem in RecyclerListView.
- * Encapsulates all behavior around progress &
+ * Encapsulates all UI around progress &
  * completion of video tasks.
  *
  * @author Pär Amsen 2016
