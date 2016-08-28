@@ -1,4 +1,4 @@
-package com.amsen.par.govideoyoself.view.base.rx.subscriber;
+package com.amsen.par.govideoyoself.base.rx.subscriber;
 
 import rx.Subscriber;
 import rx.functions.Action0;
@@ -25,6 +25,7 @@ public class OnNextOnCompletedSubscriber<T> extends Subscriber<T> {
 
     @Override
     public void onError(Throwable e) {
+        e.printStackTrace();
     }
 
     @Override

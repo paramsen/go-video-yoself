@@ -1,11 +1,9 @@
-package com.amsen.par.govideoyoself.view.base.rx.event;
+package com.amsen.par.govideoyoself.base.rx.event;
 
-import com.amsen.par.govideoyoself.view.base.rx.subscriber.OnCompletedSubscriber;
-import com.amsen.par.govideoyoself.view.base.rx.subscriber.OnNextOnCompletedSubscriber;
-import com.amsen.par.govideoyoself.view.base.rx.subscriber.OnNextSubscriber;
+import com.amsen.par.govideoyoself.base.rx.subscriber.OnCompletedSubscriber;
+import com.amsen.par.govideoyoself.base.rx.subscriber.OnNextOnCompletedSubscriber;
 
 import rx.Observable;
-import rx.observers.SafeSubscriber;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 

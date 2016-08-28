@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1005512568576",
+    "firebase_url": "https://go-video-yoself.firebaseio.com",
+    "project_id": "go-video-yoself",
+    "storage_bucket": "go-video-yoself.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1005512568576:android:83a7ef6b3987c3f6",
+        "android_client_info": {
+          "package_name": "com.amsen.par.govideoyoself"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1005512568576-ur1eeruersghkaf7uqbkk8aa948ramoj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCM0XPMPanwOJwK4fpbnG90lmd_quylpRQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,4 @@
-package com.amsen.par.govideoyoself.view.base.rx.subscriber;
+package com.amsen.par.govideoyoself.base.rx.subscriber;
 
 import rx.Subscriber;
 import rx.functions.Action0;

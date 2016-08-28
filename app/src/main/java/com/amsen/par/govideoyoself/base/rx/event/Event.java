@@ -1,4 +1,4 @@
-package com.amsen.par.govideoyoself.view.base.rx.event;
+package com.amsen.par.govideoyoself.base.rx.event;
 
 /**
  * @author Pär Amsen 2016

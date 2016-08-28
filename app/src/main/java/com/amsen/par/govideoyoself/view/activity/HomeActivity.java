@@ -1,57 +1,39 @@
 package com.amsen.par.govideoyoself.view.activity;
 
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.amsen.par.govideoyoself.R;
-import com.amsen.par.govideoyoself.view.base.rx.event.Event;
-import com.amsen.par.govideoyoself.view.base.rx.event.EventStream;
-import com.amsen.par.govideoyoself.view.base.rx.subscriber.OnNextSubscriber;
+import com.amsen.par.govideoyoself.base.rx.subscriber.OnNextSubscriber;
+import com.amsen.par.govideoyoself.model.VideoStatus;
+import com.amsen.par.govideoyoself.source.VideoSource;
+import com.amsen.par.govideoyoself.source.event.VideoEvent;
 import com.amsen.par.govideoyoself.view.fragment.DoneFragment;
 import com.amsen.par.govideoyoself.view.fragment.ListFragment;
-import com.amsen.par.govideoyoself.view.model.VideoStatus;
-import com.amsen.par.govideoyoself.view.source.VideoSource;
-import com.amsen.par.govideoyoself.view.source.event.VideoEvent;
 
-import rx.Observable;
+import java.util.List;
 
 /**
  * @author Pär Amsen 2016
  */
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends BaseActivity {
     private VideoSource videoSource;
-    private EventStream eventStream;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initDependencies();
-
         setContentView(R.layout.activity_home);
+        videoSource = getApplicationGraph(this).source;
 
         initialState();
-    }
-
-    private void initDependencies() {
-        eventStream = new EventStream();
-        videoSource = new VideoSource();
+        initBehavior();
     }
 
     private void initialState() {
         videoSource
-                .getVideos()
-                .map(videoStatuses -> {
-                    int complete = 0;
-
-                    for(VideoStatus v : videoStatuses) {
-                        complete += v.isCompleted() ? 1 : 0;
-                    }
-
-                    return complete == videoStatuses.size();
-                })
+                .get()
+                .map(this::isAllVideosCompleted)
                 .subscribe(new OnNextSubscriber<>(completedVideos -> {
-                    if(completedVideos) {
+                    if (completedVideos) {
                         showFragment(new DoneFragment());
                     } else {
                         showFragment(new ListFragment());
@@ -59,10 +41,28 @@ public class HomeActivity extends AppCompatActivity {
                 }));
     }
 
-    private void showFragment(Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragments, fragment)
-                .commit();
+    private void initBehavior() {
+        getViewGraph().eventStream
+                .stream()
+                .filter(e -> e instanceof VideoEvent && ((VideoEvent) e).type == VideoEvent.Type.COMPLETE)
+                .cast(VideoEvent.class)
+                .flatMap(e -> videoSource.get())
+                .map(this::isAllVideosCompleted)
+                .subscribe(new OnNextSubscriber<>((completed, subscriber) -> {
+                    if (completed) {
+                        showFragment(new DoneFragment());
+                        subscriber.unsubscribe();
+                    }
+                }));
+    }
+
+    private boolean isAllVideosCompleted(List<VideoStatus> videoStatuses) {
+        int complete = 0;
+
+        for (VideoStatus v : videoStatuses) {
+            complete += v.isCompleted() ? 1 : 0;
+        }
+
+        return complete == videoStatuses.size();
     }
 }
