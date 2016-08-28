@@ -1,5 +1,5 @@
 # Go Video Yoself
-"Entry point": HomeActivity  
+* Entry point: HomeActivity
 
 ## Prerequisites
 * Java 8
