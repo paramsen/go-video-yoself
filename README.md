@@ -1,6 +1,6 @@
 # Go Video Yoself
-* Entry point: HomeActivity
-* Developed and tested on __Android 6.0.1 API 23 / Sony Xperia Z5 Compact__ (I've got no other devices avail / no network for downloading emulators)
+* Tested on __Android 6.0.1 API 23 / Sony Xperia Z5 Compact__ (I've got no other devices avail / no network for downloading emulators)
+*  Entry point: HomeActivity
 
 ## Prerequisites
 * Java 8
