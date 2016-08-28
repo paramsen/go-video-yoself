@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
+ * Mock implementation of storage. Switch impls for the real deal with persistence & stuff.
+ *
  * @author Pär Amsen 2016
  */
 public class MockStorage implements Storage<VideoStatus> {

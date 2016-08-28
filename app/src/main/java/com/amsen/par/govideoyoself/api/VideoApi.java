@@ -11,6 +11,9 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 /**
+ * Api mapping for the Video API. This wraps FireBase
+ * and handles the events / lifecycle of upload.
+ *
  * @author Pär Amsen 2016
  */
 public class VideoApi {
@@ -32,17 +35,20 @@ public class VideoApi {
                     .putFile(uri)
                     .addOnProgressListener(progress -> {
                         eventStream.post(new VideoEvent<>(id, VideoEvent.Type.PROGRESS, (100.0d * progress.getBytesTransferred()) / progress.getTotalByteCount()));
+
                         System.out.println("id " + id + " progress: " + progress.getBytesTransferred() + " / " + progress.getTotalByteCount());
                     })
                     .addOnSuccessListener(success -> {
                         subscriber.onNext(true);
                         subscriber.onCompleted();
                         eventStream.post(new VideoEvent<>(id, VideoEvent.Type.COMPLETE, null));
+
                         System.out.println("success");
                     })
                     .addOnFailureListener(failure -> {
                         subscriber.onError(failure);
                         eventStream.post(new VideoEvent<>(id, VideoEvent.Type.INCOMPLETE, null));
+
                         failure.printStackTrace();
                     });
         });

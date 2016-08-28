@@ -13,6 +13,9 @@ import java.util.List;
 import rx.Observable;
 
 /**
+ * Source = Single Source of Truth. VideoSource is the single source/sink for all VideoStatus related actions.
+ * Keeps a cache and manage the API.
+ * 
  * @author Pär Amsen 2016
  */
 public class VideoSource {

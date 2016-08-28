@@ -8,6 +8,7 @@ import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 
 /**
+ * Rx version of otto.EventBus [the largest EventBus lib for Android]. Streamable instead and expose a better api.
  * @author Pär Amsen 2016
  */
 public class EventStream {

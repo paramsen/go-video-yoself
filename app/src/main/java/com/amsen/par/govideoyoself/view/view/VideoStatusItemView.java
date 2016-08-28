@@ -1,11 +1,6 @@
 package com.amsen.par.govideoyoself.view.view;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Parcelable;
-import android.provider.MediaStore;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,10 +23,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
 /**
+ * Encapsulation for ListItem in RecyclerListView.
+ * Encapsulates all behavior around progress &
+ * completion of video tasks.
+ *
  * @author Pär Amsen 2016
  */
 public class VideoStatusItemView extends FrameLayout {
@@ -71,58 +72,86 @@ public class VideoStatusItemView extends FrameLayout {
     }
 
     private void initBehavior() {
+        incompleteContainer.setVisibility(VISIBLE);
+        progressContainer.setVisibility(GONE);
+        completeContainer.setVisibility(GONE);
+
         Observable<VideoEvent> videoEvents = eventStream.stream()
                 .filter(e -> e instanceof VideoEvent && ((VideoEvent) e).id == videoStatus.getId())
                 .cast(VideoEvent.class)
                 .share();
 
-        videoEvents.filter(e -> e.type == VideoEvent.Type.PROGRESS)
+        Subscription progressSubscription = videoEvents.filter(e -> e.type == VideoEvent.Type.PROGRESS)
                 .throttleFirst(300, TimeUnit.MILLISECONDS, Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new OnNextSubscriber<>(this::onProgress));
 
         videoEvents.filter(e -> e.type == VideoEvent.Type.COMPLETE)
-                .subscribe(new OnNextSubscriber<>(this::onComplete));
+                .subscribe(new OnNextSubscriber<>((e, subscriber) -> {
+                    progressSubscription.unsubscribe(); //be sure to close the mem leaks :)
+                    subscriber.unsubscribe();
+                    onComplete();
+                }));
+
+        videoEvents.filter(e -> e.type == VideoEvent.Type.INCOMPLETE)
+                .subscribe(new OnNextSubscriber<>(this::onUploadFailure));
+    }
+
+    private void onUploadFailure(VideoEvent event) {
+        Snackbar.make(this, getResources().getString(R.string.Failed_to_upload_ARG1_video, videoStatus.getUnicodeIcon()), Snackbar.LENGTH_LONG)
+                .setAction(R.string.Show_why, e -> {
+                    Snackbar.make(VideoStatusItemView.this, "DEBUG Error message: " + ((Throwable) event.value).getMessage(), Snackbar.LENGTH_LONG).show();
+                })
+                .show();
     }
 
     private void onProgress(VideoEvent event) {
         double progressValue = (double) event.value;
 
-        if(progressContainer.getVisibility() == GONE) {
-            progressContainer.setVisibility(VISIBLE);
-        }
+        incompleteContainer.setVisibility(GONE);
+        progressContainer.setVisibility(VISIBLE);
 
         progress.setText(String.format(Locale.ENGLISH, "%d%%", (int) progressValue));
         progressBar.setProgress((int) progressValue);
     }
 
-    private void onComplete(VideoEvent e) {
-        if(completeContainer.getVisibility() == GONE) {
-            completeContainer.setVisibility(VISIBLE);
-        }
+    private void onComplete() {
+        incompleteContainer.setVisibility(GONE);
+        progressContainer.setVisibility(GONE);
+        completeContainer.setVisibility(VISIBLE);
 
         complete.setText("✓ Done!");
     }
 
     @OnClick(R.id.video_item)
     protected void onClick() {
-        if(videoStatus.isCompleted()) {
-            Snackbar.make(this, getResources().getString(R.string.ARG1_challenge_has_been_completed, videoStatus.getUnicodeIcon()), Snackbar.LENGTH_SHORT).show();
-        } else {
-            behavior.start(videoStatus);
-        }
+        delay(() -> {
+            if (videoStatus.isCompleted()) {
+                Snackbar.make(this, getResources().getString(R.string.ARG1_challenge_has_been_completed, videoStatus.getUnicodeIcon()), Snackbar.LENGTH_SHORT).show();
+            } else {
+                behavior.start(videoStatus);
+            }
+        });
     }
 
     public void apply(VideoStatus videoStatus) {
         this.videoStatus = videoStatus;
         icon.setText(videoStatus.getUnicodeIcon());
-        title.setText(videoStatus.getDisplayName());
+        title.setText(videoStatus.getActionDisplayString());
 
-        if(videoStatus.isCompleted()) {
-            onComplete(null);
+        if (videoStatus.isCompleted()) {
+            onComplete();
         } else {
             initBehavior();
         }
     }
 
+    public void delay(Action0 func) {
+        Observable.just(true)
+                .delay(getResources().getInteger(android.R.integer.config_shortAnimTime), TimeUnit.MILLISECONDS, Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new OnNextSubscriber<>(e -> {
+                    func.call();
+                }));
+    }
 }

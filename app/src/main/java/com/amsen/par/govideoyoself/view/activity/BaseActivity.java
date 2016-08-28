@@ -63,6 +63,7 @@ public class BaseActivity extends AppCompatActivity {
     public void showFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                 .replace(R.id.fragments, fragment)
                 .commit();
     }

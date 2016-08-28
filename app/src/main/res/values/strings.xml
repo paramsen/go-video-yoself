@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Go Video Yoself</string>
-    <string name="ARG1_challenge_has_been_completed">%1$s challenge has been completed!</string>
+    <string name="ARG1_challenge_has_been_completed">%1$s challenge is completed</string>
+    <string name="Show_why">Show why</string>
+    <string name="Failed_to_upload_ARG1_video">Failed to upload the %1$s video!</string>
 </resources>

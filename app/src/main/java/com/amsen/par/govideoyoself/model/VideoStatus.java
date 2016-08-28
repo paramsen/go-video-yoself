@@ -5,13 +5,13 @@ package com.amsen.par.govideoyoself.model;
  */
 public class VideoStatus {
     private int id;
-    private String displayName;
+    private String actionDisplayString;
     private String unicodeIcon;
     private boolean completed;
 
-    public VideoStatus(int id, String displayName, String unicodeIcon, boolean completed) {
+    public VideoStatus(int id, String actionDisplayString, String unicodeIcon, boolean completed) {
         this.id = id;
-        this.displayName = displayName;
+        this.actionDisplayString = actionDisplayString;
         this.unicodeIcon = unicodeIcon;
         this.completed = completed;
     }
@@ -24,12 +24,12 @@ public class VideoStatus {
         this.id = id;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getActionDisplayString() {
+        return actionDisplayString;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setActionDisplayString(String actionDisplayString) {
+        this.actionDisplayString = actionDisplayString;
     }
 
     public boolean isCompleted() {
