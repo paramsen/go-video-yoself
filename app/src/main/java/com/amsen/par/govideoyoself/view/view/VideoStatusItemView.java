@@ -5,10 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.amsen.par.govideoyoself.R;
@@ -32,6 +35,8 @@ import rx.schedulers.Schedulers;
  * @author Pär Amsen 2016
  */
 public class VideoStatusItemView extends FrameLayout {
+    @BindView(R.id.icon)
+    protected TextView icon;
     @BindView(R.id.incompleteContainer)
     protected View incompleteContainer;
     @BindView(R.id.title)
@@ -40,6 +45,8 @@ public class VideoStatusItemView extends FrameLayout {
     protected View progressContainer;
     @BindView(R.id.progress)
     protected TextView progress;
+    @BindView(R.id.progressBar)
+    protected ProgressBar progressBar;
     @BindView(R.id.completeContainer)
     protected View completeContainer;
     @BindView(R.id.complete)
@@ -49,13 +56,18 @@ public class VideoStatusItemView extends FrameLayout {
     private EventStream eventStream;
     private VideoBehavior behavior;
 
-    public VideoStatusItemView(Activity activity, EventStream eventStream, VideoBehavior behavior) {
+    public VideoStatusItemView(Activity activity, ViewGroup parent, EventStream eventStream, VideoBehavior behavior) {
         super(activity);
         this.eventStream = eventStream;
         this.behavior = behavior;
 
-        View view = LayoutInflater.from(activity).inflate(R.layout.view_video_item, this, true);
-        ButterKnife.bind(view, this);
+        View view = LayoutInflater.from(activity).inflate(R.layout.view_video_item, parent, false);
+        ViewGroup.LayoutParams lp = parent.getLayoutParams();
+        lp.height = LayoutParams.WRAP_CONTENT;
+        setLayoutParams(lp);
+        addView(view);
+
+        ButterKnife.bind(this, view);
     }
 
     private void initBehavior() {
@@ -80,19 +92,22 @@ public class VideoStatusItemView extends FrameLayout {
             progressContainer.setVisibility(VISIBLE);
         }
 
-        progress.setText(String.format(Locale.ENGLISH, "%.0f%%", progressValue));
+        progress.setText(String.format(Locale.ENGLISH, "%d%%", (int) progressValue));
+        progressBar.setProgress((int) progressValue);
     }
 
     private void onComplete(VideoEvent e) {
         if(completeContainer.getVisibility() == GONE) {
             completeContainer.setVisibility(VISIBLE);
         }
+
+        complete.setText("✓ Done!");
     }
 
     @OnClick(R.id.video_item)
     protected void onClick() {
         if(videoStatus.isCompleted()) {
-            Snackbar.make(this, R.string.This_challenge_has_been_completed, Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(this, getResources().getString(R.string.ARG1_challenge_has_been_completed, videoStatus.getUnicodeIcon()), Snackbar.LENGTH_SHORT).show();
         } else {
             behavior.start(videoStatus);
         }
@@ -100,6 +115,7 @@ public class VideoStatusItemView extends FrameLayout {
 
     public void apply(VideoStatus videoStatus) {
         this.videoStatus = videoStatus;
+        icon.setText(videoStatus.getUnicodeIcon());
         title.setText(videoStatus.getDisplayName());
 
         if(videoStatus.isCompleted()) {

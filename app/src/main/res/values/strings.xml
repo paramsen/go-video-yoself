@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Go Video Yoself</string>
-    <string name="This_challenge_has_been_completed">This challenge has been completed!</string>
+    <string name="ARG1_challenge_has_been_completed">%1$s challenge has been completed!</string>
 </resources>

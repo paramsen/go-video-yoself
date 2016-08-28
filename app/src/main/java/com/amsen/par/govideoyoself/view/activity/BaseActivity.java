@@ -49,7 +49,7 @@ public class BaseActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (data != null && data.getData() != null) {
+        if (data != null && data.getData() != null) { //video result returned -> post it
             runOnMain(e -> applicationGraph.eventStream.post(new VideoEvent<>(requestCode, VideoEvent.Type.RECORDED, data.getData())));
         }
     }

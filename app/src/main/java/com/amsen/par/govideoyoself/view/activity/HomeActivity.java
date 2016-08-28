@@ -9,6 +9,7 @@ import com.amsen.par.govideoyoself.source.VideoSource;
 import com.amsen.par.govideoyoself.source.event.VideoEvent;
 import com.amsen.par.govideoyoself.view.fragment.DoneFragment;
 import com.amsen.par.govideoyoself.view.fragment.ListFragment;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.List;
 

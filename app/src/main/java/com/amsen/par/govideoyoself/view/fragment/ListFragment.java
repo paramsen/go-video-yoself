@@ -74,7 +74,7 @@ public class ListFragment extends BaseFragment {
 
         @Override
         public ItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ItemHolder(new VideoStatusItemView(activity, eventStream, activity.getViewGraph().videoBehavior));
+            return new ItemHolder(new VideoStatusItemView(activity, parent, eventStream, activity.getViewGraph().videoBehavior));
         }
 
         @Override
